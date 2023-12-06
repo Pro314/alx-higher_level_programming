@@ -1,15 +1,24 @@
-
 #!/usr/bin/python3
+
+"""
+    /**
+      * weight_average -  returns the weighted average of all integers tuple
+      * @my_list: list of tuples
+      *
+      * Return: integer, weighted average
+      */
+"""
 
 
 def weight_average(my_list=[]):
-    """Return the weighted average of all integers in a list of tuples."""
-    if not isinstance(my_list, list) or len(my_list) == 0:
-        return (0)
+    result = 0
+    if len(my_list) > 0:
+        total = 0
+        denom = 0
+        d = dict(my_list)
+        for idx, item in d.items():
+            total += int(idx) * int(item)
+            denom += int(item)
+        result = total / denom
 
-    avg = 0
-    size = 0
-    for tup in my_list:
-        avg += (tup[0] * tup[1])
-        size += tup[1]
-    return (avg / size)
+    return (result)
