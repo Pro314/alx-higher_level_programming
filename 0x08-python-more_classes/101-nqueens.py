@@ -1,149 +1,62 @@
 #!/usr/bin/python3
-
 """
-The N queens puzzle is the challenge of placing N
-non-attacking queens on an N×N chessboard.
-
-TODO:
-    * Write a program that solves the N queens problem.
+nqueens backtracking program to print the coordinates of n queens
+on an nxn grid such that they are all in non-attacking positions
 """
 
 
-def queens(chessBoard, row, majestyz, resolve):
-    """
-    Args:
-        chessBoard (list)
-        row (int)
-        majestyz (int)
-        resolve (list)
+from sys import argv
 
-    Returns:
-        resolve (list)
-    """
-    if majestyz == len(chessBoard):
-        resolve.append(extract(chessBoard))
-        return (resolve)
-
-    for col in range(len(chessBoard)):
-        if chessBoard[row][col] == -1:
-            demo = copyBoard(chessBoard)
-            demo[row][col] = 1
-            cancel(demo, row, col)
-            resolve = queens(demo, row + 1, majestyz + 1, resolve)
-    return (resolve)
-
-
-def cancel(chessBoard, row, col):
-    """
-    Cancels out vulnerable positions for the queen
-
-    Args:
-        chessBoard (list)
-        row (int)
-        col (int)
-    """
-    length = len(chessBoard)
-    """Cancel forward positions"""
-    for c in range(col + 1, length):
-        chessBoard[row][c] = 0
-    """Cancel backwards positions"""
-    for c in range(col - 1, -1, -1):
-        chessBoard[row][c] = 0
-    """Cancel down positions"""
-    for r in range(row + 1, length):
-        chessBoard[r][col] = 0
-    """Cancel up positions"""
-    for r in range(row - 1, -1, 1):
-        chessBoard[r][col] = 0
-    """Cancel right downward diagonal positions"""
-    c = col + 1
-    for r in range(row + 1, length):
-        if c >= length:
-            break
-        chessBoard[r][c] = 0
-        c += 1
-    """Cancel left upward diagonal positions"""
-    c = col - 1
-    for r in range(row - 1, -1, -1):
-        if c < 0:
-            break
-        chessBoard[r][c] = 0
-        c -= 1
-    """Cancel right upward diagonal positions"""
-    c = col + 1
-    for r in range(row - 1, -1, -1):
-        if c >= length:
-            break
-        chessBoard[r][c] = 0
-        c += 1
-    """Cancel left downward diagonal positions"""
-    c = col - 1
-    for r in range(row + 1, length):
-        if c < 0:
-            break
-        chessBoard[r][c] = 0
-        c -= 1
-
-
-def chessBoard(N):
-    """
-    Create a board of size N * N
-    """
-    chessBoard = []
-
-    """Create rows"""
-    for row in range(N):
-        chessBoard.append([])
-
-    """Create columns"""
-    for row in chessBoard:
-        for n in range(N):
-            row.append(-1)
-
-    return (chessBoard)
-
-
-def copyBoard(chessBoard):
-    """
-    make a copy of chessBoard
-    """
-    if type(chessBoard) == list:
-        """Recursively copy"""
-        return list(map(copyBoard, chessBoard))
-    return (chessBoard)
-
-
-def extract(chessBoard):
-    """
-    Extract the required outcome from the chess board
-    """
-    outcome = []
-    for row in range(len(chessBoard)):
-        for col in range(len(chessBoard)):
-            if chessBoard[row][col] == 1:
-                outcome.append([row, col])
-                break
-    return (outcome)
-
-
-def execute():
-    import sys
-
-    if len(sys.argv) != 2:
+if __name__ == "__main__":
+    a = []
+    if len(argv) != 2:
         print("Usage: nqueens N")
-        sys.exit(1)
-    if sys.argv[1].isnumeric() is False:
+        exit(1)
+    if argv[1].isdigit() is False:
         print("N must be a number")
-        sys.exit(1)
-    if int(sys.argv[1]) < 4:
+        exit(1)
+    n = int(argv[1])
+    if n < 4:
         print("N must be at least 4")
-        sys.exit(1)
+        exit(1)
 
-    chess = chessBoard(int(sys.argv[1]))
-    resultMatrix = queens(chess, 0, 0, [])
-    for row in resultMatrix:
-        print(row)
+    # initialize the answer list
+    for i in range(n):
+        a.append([i, None])
 
+    def already_exists(y):
+        """check that a queen does not already exist in that y value"""
+        for x in range(n):
+            if y == a[x][1]:
+                return True
+        return False
 
-if __name__ == '__main__':
-    execute()
+    def reject(x, y):
+        """determines whether or not to reject the solution"""
+        if (already_exists(y)):
+            return False
+        i = 0
+        while(i < x):
+            if abs(a[i][1] - y) == abs(i - x):
+                return False
+            i += 1
+        return True
+
+    def clear_a(x):
+        """clears the answers from the point of failure on"""
+        for i in range(x, n):
+            a[i][1] = None
+
+    def nqueens(x):
+        """recursive backtracking function to find the solution"""
+        for y in range(n):
+            clear_a(x)
+            if reject(x, y):
+                a[x][1] = y
+                if (x == n - 1):  # accepts the solution
+                    print(a)
+                else:
+                    nqueens(x + 1)  # moves on to next x value to continue
+
+    # start the recursive process at x = 0
+    nqueens(0)
